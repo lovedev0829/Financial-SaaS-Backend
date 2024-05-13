@@ -1,4 +1,4 @@
-# Gravestellene Backend Rest API
+# Financial SaaS Backend Rest API
 
 ### Run the project
 
