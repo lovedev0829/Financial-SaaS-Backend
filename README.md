@@ -1,26 +1,23 @@
-# Financial SaaS Backend Rest API
+Install the required dependencies with
 
-### Run the project
-
-```
-yarn install
+```sh
+npm install
 ```
 
-```
-yarn start
-```
+Initialize the database with
 
-### Run Prettier
-
-```
-yarn run prettier
+```sh
+npm run db:init
 ```
 
-### Generate hex code for JWT
+Start the app with
 
+```sh
+npm start
 ```
-  import crypto from 'crypto';
 
-  const secretKey = crypto.randomBytes(64).toString("hex");
-  console.log(secretKey);
+You can also start it in watch mode with
+
+```sh
+npm run start:dev
 ```
