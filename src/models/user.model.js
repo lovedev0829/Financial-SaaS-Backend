@@ -1,39 +1,33 @@
 const db = require('../config/db.config');
-const { createNewUser: createNewUserQuery, findUserByEmail: findUserByEmailQuery } = require('../database/queries');
 const { logger } = require('../utils/logger');
 
 class User {
-    constructor(firstname, lastname, email, password) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.password = password;
-    }
-
-    static create(newUser, cb) {
-        db.query(createNewUserQuery, 
-            [
-                newUser.firstname, 
-                newUser.lastname, 
-                newUser.email, 
-                newUser.password
-            ], (err, res) => {
+     static create(newUser, cb) {
+   
+        db.query(`INSERT INTO users (first_name, last_name, email, company_role, role, status, created_at) VALUES (
+                '${newUser.firstName}', 
+                '${newUser.lastName}',
+                '${newUser.email}',
+                '${newUser.companyRole}',
+                '${newUser.role}',
+                '${newUser.status}',
+                '${newUser.created_at}'
+            )`,
+          (err, res) => {
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
                     return;
                 }
                 cb(null, {
-                    id: res.insertId,
-                    firstname: newUser.firstname,
-                    lastname: newUser.lastname,
+                    userId: res.insertId,
                     email: newUser.email
                 });
         });
     }
 
     static findByEmail(email, cb) {
-        db.query(findUserByEmailQuery, email, (err, res) => {
+        db.query("SELECT * FROM users WHERE email = ?", email, (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);

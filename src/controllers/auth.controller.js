@@ -1,26 +1,55 @@
 const User = require('../models/user.model');
+const CompanyProspect = require('../models/company.prospect.model');
 const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
 const { generate: generateToken } = require('../utils/token');
 
 exports.signup = (req, res) => {
-    const { firstname, lastname, email, password } = req.body;
-    const hashedPassword = hashPassword(password.trim());
+    const { firstName, lastName, email, companyRole, callPhone, company, cnpj, site, message } = req.body;
 
-    const user = new User(firstname.trim(), lastname.trim(), email.trim(), hashedPassword);
+    const userData = {
+        firstName, 
+        lastName,
+        email,
+        companyRole,
+        role: "admin",
+        status: "pending",
+        created_at: Date.now(),
+    }
 
-    User.create(user, (err, data) => {
+    User.create( userData, (err, userRes) => {
         if (err) {
             res.status(500).send({
-                status: "error",
+                status: "user error",
                 message: err.message
             });
         } else {
-            const token = generateToken(data.id);
-            res.status(201).send({
-                status: "success",
-                data: {
-                    token,
-                    data
+
+            const companyProspectData = {
+                user_id: userRes.userId,
+                callPhone,
+                company,
+                cnpj,
+                site,
+                message,
+                created_at: Date.now(),
+            }
+
+            console.log(companyProspectData);
+            
+            CompanyProspect.create(companyProspectData, (err, companyRes) => {
+                if (err) {
+                    res.status(500).send({
+                        status: "company error",
+                        message: err.message
+                    });
+                } else {
+                    res.status(201).send({
+                        status: "success",
+                        data: {
+                            ...userRes,
+                            ...companyRes
+                        }
+                    });
                 }
             });
         }
