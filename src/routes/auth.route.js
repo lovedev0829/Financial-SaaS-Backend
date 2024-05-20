@@ -8,7 +8,10 @@ const authController = require('../controllers/auth.controller');
 router.route('/signup')
     .post(signupValidator, asyncHandler(checkEmail), asyncHandler(authController.signup));
 
-router.route('/signin')
+router.route('/login')
     .post(signinValidator, asyncHandler(authController.signin));
+
+router.route('/me')
+    .get(asyncHandler(authController.getCurrentUser));
 
 module.exports = router;

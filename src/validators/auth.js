@@ -39,7 +39,7 @@ const signin = (req, res, next) => {
             .required(),
         password: Joi.string()
             .trim()
-            .pattern(new RegExp('^[a-zA-Z0-9]{6,30}$'))
+            .pattern(new RegExp('^[a-zA-Z0-9]{6,30}$'), "special character (@!#$%^&*-=+)")
             .required()
     });
     validatorHandler(req, res, next, schema);

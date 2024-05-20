@@ -1,20 +1,28 @@
 const User = require('../models/user.model');
 const CompanyProspect = require('../models/company.prospect.model');
 const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const { generate: generateToken } = require('../utils/token');
+const { generate: generateToken, isValidToken, decode } = require('../utils/token');
+const { getCompanyIdByCNPJ } = require("./company.controller")
+const { currentDateTime } = require("../utils/common")
 
-exports.signup = (req, res) => {
+exports.signup = async (req, res) => {
     const { firstName, lastName, email, companyRole, callPhone, company, cnpj, site, message } = req.body;
 
-    const userData = {
+    let userData = {
         firstName, 
         lastName,
         email,
         companyRole,
-        role: "admin",
+        role: "user",
         status: "pending",
-        created_at: Date.now(),
+        company_id: 0,
+        created_at: currentDateTime(),
     }
+
+    // Fetch maching CNPJ
+    await getCompanyIdByCNPJ(cnpj).then(data => {
+        userData = {...userData, company_id: data};
+    });
 
     User.create( userData, (err, userRes) => {
         if (err) {
@@ -31,11 +39,9 @@ exports.signup = (req, res) => {
                 cnpj,
                 site,
                 message,
-                created_at: Date.now(),
+                created_at: currentDateTime(),
             }
 
-            console.log(companyProspectData);
-            
             CompanyProspect.create(companyProspectData, (err, companyRes) => {
                 if (err) {
                     res.status(500).send({
@@ -74,24 +80,79 @@ exports.signin = (req, res) => {
             return;
         }
         if (data) {
+
+            if( data.status !== "approved" ){
+                
+                let errorMsg = data.status == "pending" ? "The request is still in Pending !" : "The request has been Rejected !"
+
+                res.status(500).send({
+                    status: 'error',
+                    message: errorMsg
+                });
+
+                return;
+            } 
+
             if (comparePassword(password.trim(), data.password)) {
                 const token = generateToken(data.id);
                 res.status(200).send({
                     status: 'success',
-                    data: {
-                        token,
-                        firstname: data.firstname,
-                        lastname: data.lastname,
-                        email: data.email
-                    }
+                    accessToken: token,
+                    user: data
                 });
                 return;
             }
+
             res.status(401).send({
                 status: 'error',
-                message: 'Incorrect password'
+                message: 'Incorrect User Information'
             });
         }
     });
 
+}
+
+exports.getCurrentUser  = (req, res) => {
+    
+    const accessToken = req.headers.authorization?.split(' ')[1]; // Bearer Token
+    try {
+        if (!accessToken || !isValidToken(accessToken)) {
+          return res.status(401).json({ error: 'Invalid or expired token' });
+        }
+    
+        // Verify the token
+        const decoded = decode(accessToken);
+    
+        User.getUserData(decoded.id, (err, data) => {
+            if (err) {
+                if (err.kind === "not_found") {
+                    res.status(404).send({
+                        status: 'error',
+                        message: err.kind
+                    });
+                    return;
+                }
+
+                res.status(500).send({
+                    status: 'error',
+                    message: err.message
+                });
+                return;
+            } else {
+                
+                if (!data) {
+                    return res.status(404).json({ error: 'User not found' });
+                  }
+          
+                  res.status(200).send({
+                      status: 'success',
+                      user: data
+                  });
+            }
+        })    
+        
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
 }

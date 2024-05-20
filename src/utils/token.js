@@ -12,7 +12,18 @@ const decode = (token) => {
     }
 };
 
+// Token validation helper
+const isValidToken = (token) => {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      return !!decoded; // Convert truthy/falsy to boolean
+    } catch (error) {
+      return false;
+    }
+  };
+
 module.exports = {
     generate,
+    isValidToken,
     decode
 }
