@@ -6,9 +6,9 @@ const transporter = nodemailer.createTransport({
     secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
       user: "maddison53@ethereal.email",
-      pass: "jn7jnAPss4f63QBp6D",
+      pass: "jn7jnAPss4f63QBp6D", 
     },
-  });
+});
 
 const currentDateTime = () => {
   
