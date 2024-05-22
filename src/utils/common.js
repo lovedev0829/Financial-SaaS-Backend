@@ -5,10 +5,23 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // Use `true` for port 465, `false` for all other ports
     auth: {
-      user: "maddison53@ethereal.email",
-      pass: "jn7jnAPss4f63QBp6D", 
+      user: "vladstrelnykov@gmail.com",
+      pass: "GrushAdmin0829!@#", 
     },
 });
+
+const transferMail = async function main(from, to, subject, text, html) {
+  // send mail with defined transport object
+  const info = await transporter.sendMail({
+      from: from,
+      to: to,
+      subject: subject,
+      text: text,
+      html: html
+  });
+  console.log("Message sent: %s", info.messageId);
+}
+
 
 const currentDateTime = () => {
   
@@ -24,6 +37,7 @@ const currentDateTime = () => {
 
 module.exports= {
   transporter,
+  transferMail,
   currentDateTime
 }
 

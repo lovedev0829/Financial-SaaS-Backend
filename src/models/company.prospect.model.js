@@ -40,7 +40,7 @@ class CompanyProspect {
     }
 
     static updateCompanyProspectStatus (data, cb) {
-        db.query(`UPDATE users SET status = '${data.status}' WHERE id = '${data.user_id}' `, 
+        db.query(`UPDATE users SET status = '${data.status}', company_id='${data.companyId}' WHERE id = '${data.user_id}' `, 
                 (err, res) => {
                 if (err) {
                     logger.error(err.message);

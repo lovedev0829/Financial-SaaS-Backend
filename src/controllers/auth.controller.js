@@ -4,7 +4,8 @@ const { hash: hashPassword, compare: comparePassword } = require('../utils/passw
 const { generate: generateToken, isValidToken, decode } = require('../utils/token');
 const { getCompanyIdByCNPJ } = require("./company.controller")
 const { currentDateTime } = require("../utils/common")
-
+const { transferMail } = require("../utils/common")
+const { ADMIN_EMAIL } = require("../utils/secrets")
 exports.signup = async (req, res) => {
     const { firstName, lastName, email, companyRole, callPhone, company, cnpj, site, message } = req.body;
 
@@ -42,13 +43,17 @@ exports.signup = async (req, res) => {
                 created_at: currentDateTime(),
             }
 
-            CompanyProspect.create(companyProspectData, (err, companyRes) => {
+
+            CompanyProspect.create(companyProspectData, async (err, companyRes) => {
                 if (err) {
                     res.status(500).send({
                         status: "company error",
                         message: err.message
                     });
                 } else {
+                    
+                    await transferMail(email, ADMIN_EMAIL, "Hi Support Team", message);
+
                     res.status(201).send({
                         status: "success",
                         data: {

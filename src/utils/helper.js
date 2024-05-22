@@ -1,6 +1,7 @@
 const RolePermission = require('../models').RolePermission;
 const Permission = require('../models').Permission;
 
+
 const checkPermission = (roleId, permName) => {
     return new Promise(
         (resolve, reject) => {
@@ -32,5 +33,5 @@ const checkPermission = (roleId, permName) => {
 
 
 module.exports = {
-    checkPermission
+    checkPermission,
 };
