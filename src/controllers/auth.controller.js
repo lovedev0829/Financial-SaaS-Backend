@@ -6,6 +6,7 @@ const { getCompanyIdByCNPJ } = require("./company.controller")
 const { currentDateTime } = require("../utils/common")
 const { transferMail } = require("../utils/common")
 const { ADMIN_EMAIL } = require("../utils/secrets")
+
 exports.signup = async (req, res) => {
     const { firstName, lastName, email, companyRole, callPhone, company, cnpj, site, message } = req.body;
 
@@ -14,7 +15,7 @@ exports.signup = async (req, res) => {
         lastName,
         email,
         companyRole,
-        role: "user",
+        role: "master",
         status: "pending",
         company_id: 0,
         created_at: currentDateTime(),
@@ -147,12 +148,11 @@ exports.getCurrentUser  = (req, res) => {
                 
                 if (!data) {
                     return res.status(404).json({ error: 'User not found' });
-                  }
-          
-                  res.status(200).send({
-                      status: 'success',
-                      user: data
-                  });
+                }
+                res.status(200).send({
+                    status: 'success',
+                    user: data
+                });
             }
         })    
         

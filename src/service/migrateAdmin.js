@@ -9,7 +9,7 @@ const { hash: hashPassword } = require('../utils/password');
 
 const migrateAdmin = (db) => {
  return db.query(`SELECT * FROM users WHERE email = '${ADMIN_EMAIL}'`, (err, res) => {
-    if(res[0]) {
+    if(res?.[0]) {
       console.log("[Admin] exists already");
       return true;
     } 

@@ -1,5 +1,9 @@
 const CompanyProspect = require('../models/company.prospect.model');
-const CompanyModel = require('../models/company.model');
+const Company = require('../models/company.model');
+
+const { transferMail } = require('../utils/common');
+const { ADMIN_EMAIL } = require('../utils/secrets');
+
 exports.getCompanyIdByCNPJ = (cnpj) =>{
      return new Promise((resolve, reject) => {
         Company.getCompanyIdByCNPJ( cnpj, (err, data) => {
@@ -29,20 +33,21 @@ exports.getCompanyProspects = (req, res) =>{
     })
 }
 
-exports.updateCompanyProspectStatus = (req, res) =>{
-    const {user_id, cnpj, status} = req.body;
+exports.updateCompanyProspectStatus =  (req, res) =>{
+    const {user_id, cnpj, status, email} = req.body;
     
     // Check Company if it has been registered
-    CompanyModel.getCompanyIdByCNPJ(cnpj,(err, companyId) => {
-        if(!companyId){
+    Company.getCompanyIdByCNPJ(cnpj,(err, companyId) => {
+        if(!companyId && status === "approved"){
             res.status(404).send({
                 status: 'error',
                 message: "The company has not been registered yet, Please contact company"
             });
             return;
         } else{
+
             // If the company is registered then process approve.
-            CompanyProspect.updateCompanyProspectStatus({user_id, status, companyId},(err) => {
+            CompanyProspect.updateCompanyProspectStatus({user_id, status, companyId}, async (err) => {
                 if (err) {
                     res.status(500).send({
                         status: 'error',
@@ -50,6 +55,14 @@ exports.updateCompanyProspectStatus = (req, res) =>{
                     });
                     return;
                 } else {
+
+                    if(status == "approved"){
+                        const message = "You are Approved!";
+                        await transferMail(ADMIN_EMAIL, email, "Hi Thank you for reaching out us!", message);
+                    } else if(status == "rejected") {
+                        const message = "Sorry You are rejected!";
+                        await transferMail(ADMIN_EMAIL, email, "Hi Thank you for reaching out us!", message);
+                    }
                     res.status(200).send({
                         status: 'success',
                     });

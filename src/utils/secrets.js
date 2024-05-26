@@ -1,5 +1,5 @@
-require('dotenv/config');
-
+const path = require('path'); 
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { logger } = require('./logger');
 
 const {
@@ -7,6 +7,7 @@ const {
     DB_USER,
     DB_PASS,
     DB_NAME,
+    DB_PORT,
     JWT_SECRET_KEY,
     ADMIN_FIRST_NAME,
     ADMIN_LAST_NAME,
@@ -14,12 +15,13 @@ const {
     ADMIN_AVATAR,
     ADMIN_PASS
 } = process.env;
-
+console.log(DB_HOST)
 const requiredCredentials = [
     'DB_HOST',
     'DB_USER',
     'DB_PASS',
     'DB_NAME',
+    'DB_PORT',
     'JWT_SECRET_KEY'
 ];
 
@@ -35,6 +37,7 @@ module.exports = {
    DB_USER,
    DB_PASS,
    DB_NAME,
+   DB_PORT,
    JWT_SECRET_KEY,
    ADMIN_EMAIL,
    ADMIN_FIRST_NAME,
