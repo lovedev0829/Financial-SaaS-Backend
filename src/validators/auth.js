@@ -18,9 +18,9 @@ const signup = (req, res, next) => {
         cnpj: Joi.string()
             .required(),
         site: Joi.string()
-            .required(),
+            .allow(),
         message: Joi.string()
-            .required(),
+            .allow(),
         email: Joi.string()
             .email()
             .required(),

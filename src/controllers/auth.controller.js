@@ -44,7 +44,6 @@ exports.signup = async (req, res) => {
                 created_at: currentDateTime(),
             }
 
-
             CompanyProspect.create(companyProspectData, async (err, companyRes) => {
                 if (err) {
                     res.status(500).send({
