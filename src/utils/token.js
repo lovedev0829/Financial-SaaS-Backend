@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = require('../utils/secrets');
 const { logger } = require('./logger');
 
-const generate = (id) => jwt.sign({ id }, JWT_SECRET_KEY, { expiresIn: '1d'});
+const generateToken = (id) => jwt.sign({ id }, JWT_SECRET_KEY, { expiresIn: '1d'});
 
 const decode = (token) => {
     try {
@@ -23,7 +23,7 @@ const isValidToken = (token) => {
   };
 
 module.exports = {
-    generate,
+    generateToken,
     isValidToken,
     decode
 }

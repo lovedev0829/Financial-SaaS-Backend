@@ -1,7 +1,7 @@
 const User = require('../models/user.model');
 const CompanyProspect = require('../models/company.prospect.model');
 const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const { generate: generateToken, isValidToken, decode } = require('../utils/token');
+const { generateToken, isValidToken, decode } = require('../utils/token');
 const { getCompanyIdByCNPJ } = require("./company.controller")
 const { currentDateTime } = require("../utils/common")
 const { transferMail } = require("../utils/common")
@@ -159,4 +159,52 @@ exports.getCurrentUser  = (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
       }
+}
+
+exports.validateToken = (req, res) => {
+
+    const { token } = req.query;
+
+    if(isValidToken(token)){
+        const { id } = decode(token);
+        User.getUserData(id, (err, data) => {
+            if(data){
+                res.status(200).json({
+                    status: "success",
+                    ...data
+                })
+            } else {
+                res.status(500).json({
+                    status: "error",
+                    message: "invalid user"
+                })
+            }
+        })
+    } else {
+        res.status(500).json({
+            status: "error",
+            message: "invalid token"
+        })
+    }
+}
+
+exports.confirmRegistration = (req, res) => {
+    
+    const { password, userId, firstName, lastName, callPhone, company } = req.body;
+
+    const haspwd = hashPassword(password);
+
+    User.confirmUserRegistration({haspwd, userId}, (err, data) => {
+        if(err) {
+            res.status(500).json({
+                status: "error",
+                message: "Something went wrong!"
+            })
+        } else {
+            res.status(200).json({
+                status: "success",
+                data
+            })
+        }
+    })
 }

@@ -45,7 +45,38 @@ const signin = (req, res, next) => {
     validatorHandler(req, res, next, schema);
 };
 
+const confirmRegister = (req, res, next) => {
+    const schema = Joi.object().keys({
+        firstName: Joi.string()
+            .min(3)
+            .max(50)
+            .required(),
+        lastName: Joi.string()
+            .min(3)
+            .max(50)
+            .required(),
+        callPhone: Joi.string()
+            .required(),
+        company: Joi.string()
+            .required(),
+        password: Joi.string()
+            .min(6)
+            .max(12)
+            .required(),
+        confirmPassword: Joi.string()
+            .allow(),
+        userId: Joi.number()
+            .required(),
+        term1: Joi.bool()
+            .truthy(),
+        term2: Joi.bool()
+            .truthy()
+    });
+    validatorHandler(req, res, next, schema);
+};
+
 module.exports = {
     signup,
-    signin
+    signin,
+    confirmRegister
 };

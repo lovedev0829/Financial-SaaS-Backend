@@ -1,26 +1,25 @@
-const nodemailer = require("nodemailer")
-//Mail initialization
-const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // Use `true` for port 465, `false` for all other ports
-    auth: {
-      user: "vladstrelnykov@gmail.com",
-      pass: "GrushAdmin0829!@#", 
-    },
-});
+const sendGridMail = require('@sendgrid/mail')
+sendGridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-const transferMail = async function main(from, to, subject, text, html) {
-  // send mail with defined transport object
-  const info = await transporter.sendMail({
-      from: from,
-      to: to,
-      subject: subject,
-      text: text,
-      html: html
-  });
-  console.log("Message sent: %s", info.messageId);
-}
+const transferMail = async (from, to, subject, text, html) => {
+  const msg = {
+    to: to, // Change to your recipient
+    from: from, // Change to your verified sender
+    subject: subject,
+    text: text,
+    html: html // Add HTML content if available
+  };
+
+  try {
+    await sendGridMail.send(msg);
+    console.log('Email sent');
+  } catch (error) {
+    console.error('Error sending email:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.body);
+    }
+  }
+};
 
 
 const currentDateTime = () => {
@@ -36,7 +35,6 @@ const currentDateTime = () => {
 }
 
 module.exports= {
-  transporter,
   transferMail,
   currentDateTime
 }

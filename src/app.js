@@ -6,6 +6,7 @@ const authRoute = require('./routes/auth.route');
 const companyRoute = require('./routes/company.route');
 
 const { httpLogStream } = require('./utils/logger');
+const { generateToken } = require('./utils/token');
 
 const app = express();
 
@@ -29,12 +30,14 @@ app.use('/api/auth', authRoute);
 app.use('/api/company', companyRoute);
 
 app.get('/', (req, res) => {
+    console.log(generateToken(14));
     res.status(200).send({
         status: "success",
         data: {
             message: "API working fine"
         }
     });
+
 });
 
 app.use((err, req, res, next) => {

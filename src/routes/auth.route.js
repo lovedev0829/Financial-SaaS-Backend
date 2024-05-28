@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const checkEmail = require('../middlewares/checkEmail');
-const { signup: signupValidator, signin: signinValidator } = require('../validators/auth');
+const { signup: signupValidator, signin: signinValidator, confirmRegister } = require('../validators/auth');
 const authController = require('../controllers/auth.controller');
 
 
@@ -13,5 +13,11 @@ router.route('/login')
 
 router.route('/me')
     .get(asyncHandler(authController.getCurrentUser));
+
+router.route('/validateToken')
+    .get(asyncHandler(authController.validateToken));
+
+router.route('/confirm/register')
+    .post(confirmRegister, asyncHandler(authController.confirmRegistration));
 
 module.exports = router;

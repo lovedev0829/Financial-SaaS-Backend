@@ -56,6 +56,22 @@ class User {
             cb({ kind: "not_found" }, null);
         })
     }
+    
+    static confirmUserRegistration (data, cb) {
+        
+        db.query(`UPDATE users SET 
+                        password='${data.haspwd}'
+                        WHERE id = '${data.userId}' `, 
+                (err, res) => {
+                if (err) {
+                    logger.error(err.message);
+                    cb(err, null);
+                    return;
+                }
+                cb(null, res);
+                return;
+        });
+    }
 }
 
 module.exports = User;

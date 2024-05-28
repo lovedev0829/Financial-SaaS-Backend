@@ -3,6 +3,7 @@ const Company = require('../models/company.model');
 
 const { transferMail } = require('../utils/common');
 const { ADMIN_EMAIL } = require('../utils/secrets');
+const { generateToken } = require('../utils/token');
 
 exports.getCompanyIdByCNPJ = (cnpj) =>{
      return new Promise((resolve, reject) => {
@@ -58,11 +59,18 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
                 } else {
 
                     if(status == "approved"){
-                        const message = "You are Approved!";
-                        await transferMail(ADMIN_EMAIL, email, "Hi Thank you for reaching out us!", message);
-                    } else if(status == "rejected") {
-                        const message = "Sorry You are rejected!";
-                        await transferMail(ADMIN_EMAIL, email, "Hi Thank you for reaching out us!", message);
+                        
+                        const host = req.headers.host;
+                        const token = generateToken(user_id);
+                        const title = "Hi, Welcome to Financial SaaS platform"
+                        const message = ` You can complete registeration by clicking the below link
+                                          http://localhost:3031/auth/confirm/register?token=${token}
+                                          Best regards
+                                          from Financial SaaS team
+                        `;
+                        
+                        await transferMail(ADMIN_EMAIL, email, title, message);
+
                     }
                     res.status(200).send({
                         status: 'success',
