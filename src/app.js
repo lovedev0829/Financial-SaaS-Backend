@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const authRoute = require('./routes/auth.route');
 const companyRoute = require('./routes/company.route');
+const userRoute = require('./routes/user.route');
 
 const { httpLogStream } = require('./utils/logger');
 const { generateToken } = require('./utils/token');
@@ -28,6 +29,7 @@ app.use(function (req, res, next) {
 
 app.use('/api/auth', authRoute);
 app.use('/api/company', companyRoute);
+app.use('/api/user', userRoute);
 
 app.get('/', (req, res) => {
     console.log(generateToken(14));

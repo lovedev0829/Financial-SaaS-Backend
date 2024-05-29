@@ -1,4 +1,5 @@
 const db = require('../config/db.config');
+const { currentDateTime } = require('../utils/common');
 const { logger } = require('../utils/logger');
 
 class User {
@@ -28,7 +29,7 @@ class User {
     }
 
     static findByEmail(email, cb) {
-        db.query("SELECT * FROM users WHERE email = ? ", email,  (err, res) => {
+        db.query(`SELECT * FROM users WHERE email = '${email}' and status='approved'`,  (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -39,6 +40,34 @@ class User {
                 return;
             }
             cb({ kind: "not_found" }, null);
+        })
+    }
+
+    static findEmployeeByEmail(data, cb) {
+        let newQuery = "";
+        if(data?.id){
+            newQuery = `and id!=${data?.id}`;
+        }
+        db.query(`SELECT * FROM users WHERE email = '${data?.email}' ${newQuery}`,  (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res[0]);
+            return;
+        })
+    }
+
+    static findUserByID(userId, cb) {
+        db.query(`SELECT * FROM users WHERE id = '${userId}'`,  (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res[0]);
+            return;
         })
     }
 
@@ -72,6 +101,83 @@ class User {
                 return;
         });
     }
+
+    static getCompanyEmployees(company_id, cb){
+        db.query(`SELECT * FROM users WHERE company_id = '${company_id}' and role!='master' ORDER BY created_at DESC`,  (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res);
+            return;
+        })
+    }
+
+    static deleteEmployee(ids, cb) {
+        
+        db.query(`DELETE FROM users WHERE id IN (${ids})`,  (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res);
+            return;
+        })
+    }
+
+    static createEmployee(newEmployee, cb){
+            db.query(`INSERT INTO users (first_name, last_name, avatar, email, company_role, role, company_id, status, created_at) VALUES (
+                '${newEmployee.firstName}', 
+                '${newEmployee.lastName}',
+                '${newEmployee.avatar}', 
+                '${newEmployee.email}',
+                '${newEmployee.company_role}',
+                '${newEmployee.role}',
+                '${newEmployee.company_id}',
+                'enabled',
+                '${currentDateTime()}'
+            )`,
+        (err, res) => {
+                if (err) {
+                    logger.error(err.message);
+                    cb(err, null);
+                    return;
+                }
+                cb(null, {
+                    userId: res.insertId,
+                    email: newEmployee.email
+                });
+        });
+    }
+
+    static updateEmployee(data, cb){
+        
+        let newQuery = "";
+        
+        if(data?.avatar !="") {
+            newQuery = ` avatar='${data?.avatar}', `;
+        }
+
+        db.query(`UPDATE users SET
+                ${newQuery}
+                first_name ='${data.firstName}',
+                last_name ='${data.lastName}',
+                email ='${data.email}',
+                role ='${data.role}',
+                status ='${data.status}'
+                WHERE id = '${data.id}'`,
+            (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res);
+            return;
+    });
+}
 }
 
 module.exports = User;

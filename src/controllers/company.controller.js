@@ -68,9 +68,7 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
                                           Best regards
                                           from Financial SaaS team
                         `;
-                        
-                        await transferMail(ADMIN_EMAIL, email, title, message);
-
+                        await transferMail(email, ADMIN_EMAIL, title, message);
                     }
                     res.status(200).send({
                         status: 'success',
