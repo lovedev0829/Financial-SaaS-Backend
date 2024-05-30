@@ -5,11 +5,10 @@ const { logger } = require('../utils/logger');
 class User {
      static create(newUser, cb) {
         
-        db.query(`INSERT INTO users (first_name, last_name, email, company_role, role, company_id, status, created_at) VALUES (
-                '${newUser.firstName}', 
+        db.query(`INSERT INTO users (first_name, last_name, email, role, company_id, status, created_at) VALUES (
+                '${newUser.firstName}',
                 '${newUser.lastName}',
                 '${newUser.email}',
-                '${newUser.companyRole}',
                 '${newUser.role}',
                 '${newUser.company_id}',
                 '${newUser.status}',
@@ -29,7 +28,10 @@ class User {
     }
 
     static findByEmail(email, cb) {
-        db.query(`SELECT * FROM users WHERE email = '${email}'`,  (err, res) => {
+        db.query(`SELECT * FROM users as t1 
+                    LEFT JOIN companies_propects AS t2 ON t1.id = t2.user_id 
+                    WHERE t1.email = '${email}' `,  
+            (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -72,7 +74,7 @@ class User {
     }
 
     static getUserData(userId, cb){
-        db.query(`SELECT * FROM users WHERE id = '${userId}'`,  (err, res) => {
+        db.query(`SELECT t1.*, t2.company_role FROM users AS t1 LEFT JOIN companies_propects AS t2 ON t1.id = t2.user_id WHERE t1.id = '${userId}'`,  (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -128,12 +130,11 @@ class User {
     }
 
     static createEmployee(newEmployee, cb){
-            db.query(`INSERT INTO users (first_name, last_name, avatar, email, company_role, role, company_id, status, created_at) VALUES (
+            db.query(`INSERT INTO users (first_name, last_name, avatar, email, role, company_id, status, created_at) VALUES (
                 '${newEmployee.firstName}', 
                 '${newEmployee.lastName}',
                 '${newEmployee.avatar}', 
                 '${newEmployee.email}',
-                '${newEmployee.company_role}',
                 '${newEmployee.role}',
                 '${newEmployee.company_id}',
                 'enabled',

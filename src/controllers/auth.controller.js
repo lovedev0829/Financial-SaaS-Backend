@@ -14,7 +14,6 @@ exports.signup = async (req, res) => {
         firstName, 
         lastName,
         email,
-        companyRole,
         role: "master",
         status: "pending",
         company_id: 0,
@@ -22,10 +21,10 @@ exports.signup = async (req, res) => {
     }
 
     // Fetch maching CNPJ
-    await getCompanyIdByCNPJ(cnpj).then(data => {
-        userData = {...userData, company_id: data};
+    await getCompanyIdByCNPJ(cnpj).then(company_id => {
+        userData = {...userData, company_id};
     });
-
+    console.log(userData);
     User.create( userData, (err, userRes) => {
         if (err) {
             res.status(500).send({
@@ -38,6 +37,7 @@ exports.signup = async (req, res) => {
                 user_id: userRes.userId,
                 callPhone,
                 company,
+                companyRole,
                 cnpj,
                 site,
                 message,

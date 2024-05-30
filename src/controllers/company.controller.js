@@ -8,11 +8,11 @@ const User = require('../models/user.model');
 
 exports.getCompanyIdByCNPJ = (cnpj) =>{
      return new Promise((resolve, reject) => {
-        Company.getCompanyIdByCNPJ( cnpj, (err, data) => {
+        Company.getCompanyIdByCNPJ( cnpj, (err, company_id) => {
             if (err) {
                 reject(err)
             } else {
-                resolve(data)
+                resolve(company_id)
             }
         })
     });
@@ -36,7 +36,7 @@ exports.getCompanyProspects = (req, res) =>{
 }
 
 exports.updateCompanyProspectStatus =  (req, res) =>{
-    const {user_id, cnpj, status, email} = req.body;
+    const {user_id, cnpj, status, email, company_role} = req.body;
     
     // Check Company if it has been registered
     Company.getCompanyIdByCNPJ(cnpj,(err, companyId) => {
@@ -48,7 +48,6 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
             });
             return;
         } else{
-            console.log(companyId);
             // If the company is registered then process approve.
             CompanyProspect.updateCompanyProspectStatus({user_id, status, companyId}, async (err) => {
                 if (err) {
@@ -60,17 +59,9 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
                 } else {
 
                     if(status == "approved"){
-                        
-                        const host = req.headers.host;
-                        const token = generateToken(user_id);
-                        const title = "Hi, Welcome to Financial SaaS platform"
-                        const message = ` You can complete registeration by clicking the below link
-                                          http://159.65.220.226/api/auth/confirm/register?token=${token}
-                                          Best regards
-                                          from Financial SaaS team
-                        `;
-                        console.log(message);
-                        await transferMail(email, ADMIN_EMAIL, title, message);
+                       const host = req.headers.host;
+                       await transferConfirmRegistration(host, email, user_id);
+                       Company.updateCompanyRole({company_role, companyId }, () => {})
                     }
                     res.status(200).send({
                         status: 'success',
@@ -79,6 +70,18 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
             })
         }
     });
+}
+
+const transferConfirmRegistration  = async (host, email, user_id) => {
+    const token = generateToken(user_id);
+    const title = "Hi, Welcome to Financial SaaS platform"
+    const message = ` You can complete registeration by clicking the below link
+                      http://159.65.220.226/api/auth/confirm/register?token=${token}
+                      Best regards
+                      from Financial SaaS team
+    `;
+    console.log(message);
+    await transferMail(email, ADMIN_EMAIL, title, message);
 }
 
 exports.getCompanies = (req, res) => {

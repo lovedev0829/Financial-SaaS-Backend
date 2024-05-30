@@ -22,9 +22,7 @@ const create = (req, res, next) => {
         avatar: Joi.string()
             .allow(''),
         company_id: Joi.number()
-            .required(),
-        company_role: Joi.string()
-            .required(),
+            .required()
         
     });
     validatorHandler(req, res, next, schema);

@@ -4,14 +4,14 @@ const { currentDateTime } = require("../utils/common")
 
 class Company {
     static getCompanyIdByCNPJ(cnpj, cb) {
-        db.query(`SELECT company_id FROM companies WHERE cnpj = '${cnpj}'`,  (err, res) => {
+        db.query(`SELECT id FROM companies WHERE cnpj = '${cnpj}'`,  (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
                 return;
             }
             if (res.length) {
-                cb(null, res[0]?.company_id);
+                cb(null, res[0]?.id);
                 return;
             }
             cb(null, 0);
@@ -19,7 +19,7 @@ class Company {
     }
 
     static getCompanies(cb) {
-        db.query('SELECT * FROM companies',  (err, res) => {
+        db.query('SELECT * FROM companies ORDER BY created_at asc',  (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);
@@ -30,6 +30,7 @@ class Company {
         })
     }
 
+    //delete company
     static deleteCompany(ids, cb) {
         
         db.query(`DELETE FROM companies WHERE id IN (${ids})`,  (err, res) => {
@@ -43,11 +44,12 @@ class Company {
         })
     }
 
+    //update company
     static updateCompany (data, cb) {
         
         db.query(`UPDATE companies SET
                     status = '${data.status}',
-                    company_id='${data.company_id}',
+                    company_code='${data.company_code}',
                     company_nick_name='${data.company_nick_name}',
                     company_name='${data.company_name}',
                     cnpj='${data.cnpj}',
@@ -68,9 +70,22 @@ class Company {
         });
     }
 
+    static updateCompanyRole (data, cb) {
+        // set company role when company prospect approve.
+        db.query(`UPDATE companies SET  company_role = '${data?.company_role}' WHERE id = ${data?.companyId}`, (err, data) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, data);
+            return;
+        })
+    }
+
     static createCompany (newCompany, cb) {
         db.query(`INSERT INTO companies (
-                    company_id, 
+                    company_code, 
                     company_nick_name, 
                     company_name, 
                     cnpj, 
@@ -81,14 +96,14 @@ class Company {
                     cetip_account_num, 
                     created_at
                 ) VALUES (
-                    '${newCompany.company_id}', 
+                    '${newCompany.company_code}', 
                     '${newCompany.company_nick_name}',
                     '${newCompany.company_name}',
                     '${newCompany.cnpj}',
                     '${newCompany.institution_type}',
                     '${newCompany.company_address}',
                     '${newCompany.business_email}',
-                    '${newCompany.status}',
+                    'active',
                     '${newCompany.cetip_account_num}',
                     '${currentDateTime()}'
                 )`,

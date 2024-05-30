@@ -82,7 +82,7 @@ exports.createEmployee = async (req, res) => {
                                       http://localhost:3031/auth/confirm/register?token=${token}
                                       Best regards
                     `;
-
+                    console.log(message)
                     await transferMail(masterEmail, email, title, message);
                     res.status(200).send({
                         status: 'success',

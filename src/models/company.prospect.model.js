@@ -4,8 +4,9 @@ const { logger } = require('../utils/logger');
 class CompanyProspect {
      static create(newCompany, cb) {
 
-        db.query(`INSERT INTO companies_propects (user_id, call_phone, company, cnpj, site, message, created_at) VALUES (
+        db.query(`INSERT INTO companies_propects (user_id, company_role, call_phone, company, cnpj, site, message, created_at) VALUES (
             '${newCompany.user_id}', 
+            '${newCompany.companyRole}',
             '${newCompany.callPhone}',
             '${newCompany.company}',
             '${newCompany.cnpj}',
@@ -25,9 +26,15 @@ class CompanyProspect {
     }
 
     static getCompanyProspects (cb) {
-        db.query(`SELECT t1.id as id, t1.avatar, t1.first_name, t1.last_name, t1.email, t1.role, t1.company_role, t1.company_id, t1.status, t1.created_at, 
-                         t2.id as company_prospect_id, t2.call_phone, t2.company, t2.cnpj, t2.site, t2.message 
-                 FROM users as t1 inner join companies_propects as t2 on (t1.id = t2.user_id) WHERE t1.role='master'`, 
+        db.query(`SELECT t1.id AS id, t1.avatar, t1.first_name, t1.last_name, t1.email, t1.role, t2.company_role, t1.company_id, t1.status, t1.created_at, 
+                            t2.id AS company_prospect_id, t2.call_phone, t2.company, t2.cnpj, t2.site, t2.message ,
+                            t3.id AS company_id,
+                            t3.company_code
+                    FROM users AS t1 
+                    INNER JOIN companies_propects AS t2 ON (t1.id = t2.user_id) 
+                    LEFT JOIN companies AS t3 ON t1.company_id = t3.id
+                    WHERE t1.role='master'`,
+
                 (err, res) => {
                 if (err) {
                     logger.error(err.message);
@@ -42,7 +49,7 @@ class CompanyProspect {
     static getCompanyProspectById (userId, cb) {
 
         db.query(`SELECT t1.* , t2.company_name, t3.call_phone
-                    FROM users AS t1 INNER JOIN companies AS t2 ON (t1.company_id = t2.company_id) 
+                    FROM users AS t1 INNER JOIN companies AS t2 ON (t1.company_id = t2.id) 
                     LEFT JOIN companies_propects AS t3 ON t2.cnpj = t3.cnpj
                     WHERE t1.id=${userId}
                     `, 
@@ -61,6 +68,7 @@ class CompanyProspect {
         
         db.query(`UPDATE users SET status = '${data.status}', company_id='${data.companyId}' WHERE id = '${data.user_id}' `, 
                 (err, res) => {
+                
                 if (err) {
                     logger.error(err.message);
                     cb(err, null);
@@ -70,6 +78,7 @@ class CompanyProspect {
                 return;
         });
     }
+
 
     static deleteCompanyProspects(ids, cb) {
         
