@@ -4,6 +4,7 @@ const Company = require('../models/company.model');
 const { transferMail } = require('../utils/common');
 const { ADMIN_EMAIL } = require('../utils/secrets');
 const { generateToken } = require('../utils/token');
+const User = require('../models/user.model');
 
 exports.getCompanyIdByCNPJ = (cnpj) =>{
      return new Promise((resolve, reject) => {
@@ -47,7 +48,7 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
             });
             return;
         } else{
-
+            console.log(companyId);
             // If the company is registered then process approve.
             CompanyProspect.updateCompanyProspectStatus({user_id, status, companyId}, async (err) => {
                 if (err) {
@@ -64,10 +65,11 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
                         const token = generateToken(user_id);
                         const title = "Hi, Welcome to Financial SaaS platform"
                         const message = ` You can complete registeration by clicking the below link
-                                          http://localhost:3031/auth/confirm/register?token=${token}
+                                          http://159.65.220.226/api/auth/confirm/register?token=${token}
                                           Best regards
                                           from Financial SaaS team
                         `;
+                        console.log(message);
                         await transferMail(email, ADMIN_EMAIL, title, message);
                     }
                     res.status(200).send({
@@ -116,6 +118,37 @@ exports.deleteCompany = (req, res) => {
             return;
         }
     });
+}
+
+exports.deleteCompanyProspects = (req, res) => {
+
+    const { selectedIds } = req.body;
+    
+    User.deleteEmployee(selectedIds, (err, data) => {
+        if(err){
+            res.status(500).send({
+                status: 'error',
+                message: err
+            });
+            return;
+        } else{
+            CompanyProspect.deleteCompanyProspects(selectedIds, (err, data) => {
+                if(err){
+                    res.status(500).send({
+                        status: 'error',
+                        message: err
+                    });
+                    return;
+                } else{
+                    res.status(200).send({
+                        status: 'success',
+                        companies: data
+                    });
+                    return;
+                }
+            });
+        }
+    })
 }
 
 exports.updateCompany = (req, res) => {

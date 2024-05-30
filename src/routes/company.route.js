@@ -18,6 +18,10 @@ router.route('/create')
 router.route('/prospects')
     .get(asyncHandler(companyController.getCompanyProspects));
 
+router.route('/prospects/delete')
+    .post(asyncHandler(companyController.deleteCompanyProspects));
+
+
 router.route('/user/status')
     .post(asyncHandler(companyController.updateCompanyProspectStatus));
 

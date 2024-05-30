@@ -29,7 +29,7 @@ class User {
     }
 
     static findByEmail(email, cb) {
-        db.query(`SELECT * FROM users WHERE email = '${email}' and status='approved'`,  (err, res) => {
+        db.query(`SELECT * FROM users WHERE email = '${email}'`,  (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);

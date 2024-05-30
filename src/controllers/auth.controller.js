@@ -88,7 +88,7 @@ exports.signin = (req, res) => {
 
             if( data.status !== "approved" ){
                 
-                let errorMsg = data.status == "pending" ? "The request is still in Pending !" : "The request has been Rejected !"
+                let errorMsg = `The request is still in ${data.status} !`
 
                 res.status(500).send({
                     status: 'error',
@@ -166,9 +166,12 @@ exports.validateToken = (req, res) => {
     const { token } = req.query;
 
     if(isValidToken(token)){
+
         const { id } = decode(token);
-        User.getUserData(id, (err, data) => {
+
+        CompanyProspect.getCompanyProspectById(id, (err, data) => {
             if(data){
+                console.log(data);
                 res.status(200).json({
                     status: "success",
                     ...data
@@ -190,7 +193,7 @@ exports.validateToken = (req, res) => {
 
 exports.confirmRegistration = (req, res) => {
     
-    const { password, userId, firstName, lastName, callPhone, company } = req.body;
+    const { password, userId } = req.body;
 
     const haspwd = hashPassword(password);
 
@@ -203,7 +206,7 @@ exports.confirmRegistration = (req, res) => {
         } else {
             res.status(200).json({
                 status: "success",
-                data
+                message: "You are confirmed successfully!"
             })
         }
     })

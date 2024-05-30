@@ -25,8 +25,8 @@ class CompanyProspect {
     }
 
     static getCompanyProspects (cb) {
-        db.query(`SELECT t1.id as id, t1.first_name, t1.last_name, t1.email, t1.role, t1.company_role, t1.company_id, t1.status, t1.created_at, 
-                         t2.call_phone, t2.company, t2.cnpj, t2.site, t2.message 
+        db.query(`SELECT t1.id as id, t1.avatar, t1.first_name, t1.last_name, t1.email, t1.role, t1.company_role, t1.company_id, t1.status, t1.created_at, 
+                         t2.id as company_prospect_id, t2.call_phone, t2.company, t2.cnpj, t2.site, t2.message 
                  FROM users as t1 inner join companies_propects as t2 on (t1.id = t2.user_id) WHERE t1.role='master'`, 
                 (err, res) => {
                 if (err) {
@@ -35,6 +35,24 @@ class CompanyProspect {
                     return;
                 }
                 cb(null, res);
+                return;
+        });
+    }
+
+    static getCompanyProspectById (userId, cb) {
+
+        db.query(`SELECT t1.* , t2.company_name, t3.call_phone
+                    FROM users AS t1 INNER JOIN companies AS t2 ON (t1.company_id = t2.company_id) 
+                    LEFT JOIN companies_propects AS t3 ON t2.cnpj = t3.cnpj
+                    WHERE t1.id=${userId}
+                    `, 
+                (err, res) => {
+                if (err) {
+                    logger.error(err.message);
+                    cb(err, null);
+                    return;
+                }
+                cb(null, res?.[0]);
                 return;
         });
     }
@@ -52,6 +70,20 @@ class CompanyProspect {
                 return;
         });
     }
+
+    static deleteCompanyProspects(ids, cb) {
+        
+        db.query(`DELETE FROM companies_propects WHERE user_id IN (${ids})`,  (err, res) => {
+            if (err) {
+                logger.error(err.message);
+                cb(err, null);
+                return;
+            }
+            cb(null, res);
+            return;
+        })
+    }
+    
 }
 
 module.exports = CompanyProspect;

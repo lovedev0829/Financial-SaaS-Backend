@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 const { logger } = require('../utils/logger');
 const { DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT } = require('../utils/secrets');
 const {
@@ -16,9 +16,7 @@ const connection = mysql.createConnection({
 connection.connect((err) => {
     if (err) logger.error(err.message);
     else console.log('Database connected')
-    return Promise.all([
-        migrateAdmin(connection),
-    ]);
+    migrateAdmin(connection)
 });
 
 module.exports = connection;

@@ -53,7 +53,7 @@ exports.deleteEmployee = async (req, res) => {
 
 
 exports.createEmployee = async (req, res) => {
-    
+
     const { email, company_id, masterEmail } = req.body
     const params = req.body
 
@@ -64,15 +64,19 @@ exports.createEmployee = async (req, res) => {
                 message: `A user with email address '${data?.email}' already exits`
             });
         } else {
+            
             User.createEmployee( params, async (err, data)=> {
                 if(err) {
+                    
                     res.status(500).send({
                         status: 'error',
                         message: err
                     });
+
                 } else {
 
                     const token = generateToken(data?.userId);
+
                     const title = "Hi, You are invited SaaS platform by "
                     const message = ` You can complete registeration by clicking the below link
                                       http://localhost:3031/auth/confirm/register?token=${token}
