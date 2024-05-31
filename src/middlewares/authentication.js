@@ -5,7 +5,6 @@ const authentication =  (req, res, next) => {
 
     const accessToken = req.headers.authorization?.split(' ')[1]; // Bearer Token
     const decode = decodeToken(accessToken);
-
     if( accessToken && isValidToken(accessToken)) {
         User.findUserByID(decode?.id, (_, data) => {
             if (data) {

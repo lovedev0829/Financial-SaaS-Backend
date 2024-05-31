@@ -16,7 +16,7 @@ router.route('/me')
     .get(authentication, asyncHandler(authController.getCurrentUser));
 
 router.route('/validateToken')
-    .get(authentication, asyncHandler(authController.validateToken));
+    .get(asyncHandler(authController.validateToken));
 
 router.route('/confirm/register')
     .post(confirmRegister, asyncHandler(authController.confirmRegistration));

@@ -92,7 +92,6 @@ exports.signin = (req, res) => {
             return;
         }
         if (data) {
-            console.log(data);
             if( data.status !== "approved" ){
                 
                 let errorMsg = `The request is still in ${data.status} !`
@@ -104,8 +103,7 @@ exports.signin = (req, res) => {
 
                 return;
             } 
-
-            if (comparePassword(password.trim(), data.password)) {
+            if (data.password && comparePassword(password.trim(), data.password)) {
                 const token = generateToken(data.id);
                 res.status(200).send({
                     status: 'success',
@@ -179,7 +177,6 @@ exports.validateToken = (req, res) => {
 
         CompanyProspect.getCompanyProspectById(id, (err, data) => {
             if(data){
-                console.log(data);
                 res.status(200).json({
                     status: "success",
                     ...data

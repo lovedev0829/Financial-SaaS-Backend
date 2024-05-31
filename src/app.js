@@ -32,7 +32,6 @@ app.use('/api/company', companyRoute);
 app.use('/api/user', userRoute);
 
 app.get('/', (req, res) => {
-    console.log(generateToken(14));
     res.status(200).send({
         status: "success",
         data: {

@@ -28,7 +28,6 @@ const removeFile = (filePath) => {
           if (err) {
               console.log(err);
           }
-          console.log('deleted');
       })
   }
 }

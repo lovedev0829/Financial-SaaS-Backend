@@ -15,7 +15,7 @@ router.route('/upload/avatar')
     .post(authentication, asyncHandler(uploadCtrl.upload));
 
 router.route('/upload/avatar/:image')
-    .get(authentication, asyncHandler(uploadCtrl.getUploadedImage));
+    .get(asyncHandler(uploadCtrl.getUploadedImage));
     
 router.route('/create')
     .post(authentication, createValidate, asyncHandler(userCtrl.createEmployee));

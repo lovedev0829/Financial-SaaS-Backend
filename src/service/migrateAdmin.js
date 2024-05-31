@@ -21,7 +21,7 @@ const migrateAdmin = (db) => {
         '${ADMIN_LAST_NAME}',
         '${ADMIN_EMAIL}',
         '${hashPassword(ADMIN_PASS)}',
-        'admin',
+        'superAdmin',
         '0',
         'approved',
         '${currentDateTime()}'

@@ -129,7 +129,8 @@ exports.deleteCompanyProspects = (req, res) => {
 
     const { selectedIds } = req.body;
     
-    User.deleteEmployee(selectedIds, (err, data) => {
+    // Need to delete Master Users of company which has not been approved!
+    User.deleteMasterUserOfCompany(selectedIds, (err, data) => {
         if(err){
             res.status(500).send({
                 status: 'error',
@@ -137,6 +138,8 @@ exports.deleteCompanyProspects = (req, res) => {
             });
             return;
         } else{
+            
+            // Remove Company Prospects!
             CompanyProspect.deleteCompanyProspects(selectedIds, (err, data) => {
                 if(err){
                     res.status(500).send({
