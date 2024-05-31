@@ -16,12 +16,11 @@ const migrateAdmin = (db) => {
 
     console.log("[Admin] inserting default...");
 
-    db.query(`INSERT INTO users (first_name, last_name, email, password, company_role, role, company_id, status, created_at) VALUES (
+    db.query(`INSERT INTO users (first_name, last_name, email, password, role, company_id, status, created_at) VALUES (
         '${ADMIN_FIRST_NAME}', 
         '${ADMIN_LAST_NAME}',
         '${ADMIN_EMAIL}',
         '${hashPassword(ADMIN_PASS)}',
-        'admin',
         'admin',
         '0',
         'approved',

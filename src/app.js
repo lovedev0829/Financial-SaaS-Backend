@@ -7,7 +7,7 @@ const companyRoute = require('./routes/company.route');
 const userRoute = require('./routes/user.route');
 
 const { httpLogStream } = require('./utils/logger');
-const { generateToken } = require('./utils/token');
+const { generateToken } = require('./service/auth');
 
 const app = express();
 

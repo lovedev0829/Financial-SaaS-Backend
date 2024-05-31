@@ -28,7 +28,7 @@ class User {
     }
 
     static findByEmail(email, cb) {
-        db.query(`SELECT * FROM users as t1 
+        db.query(`SELECT t1.*, t2.call_phone, t2.company FROM users as t1 
                     LEFT JOIN companies_propects AS t2 ON t1.id = t2.user_id 
                     WHERE t1.email = '${email}' `,  
             (err, res) => {

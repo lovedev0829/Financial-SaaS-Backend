@@ -3,6 +3,7 @@ const { asyncHandler } = require('../middlewares/asyncHandler');
 const checkEmail = require('../middlewares/checkEmail');
 const { signup: signupValidator, signin: signinValidator, confirmRegister } = require('../validators/auth');
 const authController = require('../controllers/auth.controller');
+const authentication = require('../middlewares/authentication');
 
 
 router.route('/signup')
@@ -12,10 +13,10 @@ router.route('/login')
     .post(signinValidator, asyncHandler(authController.signin));
 
 router.route('/me')
-    .get(asyncHandler(authController.getCurrentUser));
+    .get(authentication, asyncHandler(authController.getCurrentUser));
 
 router.route('/validateToken')
-    .get(asyncHandler(authController.validateToken));
+    .get(authentication, asyncHandler(authController.validateToken));
 
 router.route('/confirm/register')
     .post(confirmRegister, asyncHandler(authController.confirmRegistration));

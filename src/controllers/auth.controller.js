@@ -1,7 +1,7 @@
 const User = require('../models/user.model');
 const CompanyProspect = require('../models/company.prospect.model');
 const { hash: hashPassword, compare: comparePassword } = require('../utils/password');
-const { generateToken, isValidToken, decode } = require('../utils/token');
+const { generateToken, isValidToken, decode } = require('../service/auth');
 const { getCompanyIdByCNPJ } = require("./company.controller")
 const { currentDateTime } = require("../utils/common")
 const { transferMail } = require("../utils/common")
@@ -22,9 +22,9 @@ exports.signup = async (req, res) => {
 
     // Fetch maching CNPJ
     await getCompanyIdByCNPJ(cnpj).then(company_id => {
-        userData = {...userData, company_id};
+        userData = { ...userData, company_id };
     });
-    console.log(userData);
+
     User.create( userData, (err, userRes) => {
         if (err) {
             res.status(500).send({
@@ -51,8 +51,15 @@ exports.signup = async (req, res) => {
                         message: err.message
                     });
                 } else {
-                    
-                    await transferMail(email, ADMIN_EMAIL, "Hi Support Team", message);
+
+                    const messageTxt = `
+                        ${message}
+                        Company Name ${company}
+                        CNPJ ${cnpj}
+                        Call Phone ${callPhone}
+                        Site ${site}
+                    `
+                    await transferMail(email, ADMIN_EMAIL, "Looking for join Platform", messageTxt);
 
                     res.status(201).send({
                         status: "success",
@@ -85,7 +92,7 @@ exports.signin = (req, res) => {
             return;
         }
         if (data) {
-
+            console.log(data);
             if( data.status !== "approved" ){
                 
                 let errorMsg = `The request is still in ${data.status} !`
@@ -120,6 +127,7 @@ exports.signin = (req, res) => {
 exports.getCurrentUser  = (req, res) => {
     
     const accessToken = req.headers.authorization?.split(' ')[1]; // Bearer Token
+    
     try {
         if (!accessToken || !isValidToken(accessToken)) {
           return res.status(401).json({ error: 'Invalid or expired token' });

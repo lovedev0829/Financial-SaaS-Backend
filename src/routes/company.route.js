@@ -2,27 +2,28 @@ const router = require('express').Router();
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const companyController = require('../controllers/company.controller');
 const { create: createValidate, trash: deleteValidate, update: updateValidator } = require('../validators/company');
+const authentication = require('../middlewares/authentication');
 
 router.route('/list')
-    .get(asyncHandler(companyController.getCompanies));
+    .get(authentication, asyncHandler(companyController.getCompanies));
 
 router.route('/delete')
-    .post(deleteValidate, asyncHandler(companyController.deleteCompany));
+    .post(authentication, deleteValidate, asyncHandler(companyController.deleteCompany));
 
 router.route('/update')
-    .post(updateValidator, asyncHandler(companyController.updateCompany));
+    .post(authentication, updateValidator, asyncHandler(companyController.updateCompany));
 
 router.route('/create')
-    .post(createValidate, asyncHandler(companyController.createCompany));
+    .post(authentication, createValidate, asyncHandler(companyController.createCompany));
 
 router.route('/prospects')
     .get(asyncHandler(companyController.getCompanyProspects));
 
 router.route('/prospects/delete')
-    .post(asyncHandler(companyController.deleteCompanyProspects));
+    .post(authentication, asyncHandler(companyController.deleteCompanyProspects));
 
 
 router.route('/user/status')
-    .post(asyncHandler(companyController.updateCompanyProspectStatus));
+    .post(authentication, asyncHandler(companyController.updateCompanyProspectStatus));
 
 module.exports = router;

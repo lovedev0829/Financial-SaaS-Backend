@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const { transferMail, removeFile } = require('../utils/common');
-const { generateToken } = require('../utils/token');
+const { generateToken } = require('../service/auth');
+const { CLIENT_HOST } = require('../utils/secrets')
 
 exports.getCompanyEmployees = async (req, res) => {
     const { company_id } = req.params;
@@ -74,15 +75,19 @@ exports.createEmployee = async (req, res) => {
                     });
 
                 } else {
-
+                    
                     const token = generateToken(data?.userId);
-
-                    const title = "Hi, You are invited SaaS platform by "
-                    const message = ` You can complete registeration by clicking the below link
-                                      http://localhost:3031/auth/confirm/register?token=${token}
-                                      Best regards
+                    const title = "Hi, You are invited SaaS platform!"
+                    const message = `
+                        You can complete registration by clicking the below link!
+                        
+                        ${CLIENT_HOST}/auth/confirm/register?token=${token}
+                        
+                        Best regards
                     `;
+
                     console.log(message)
+                    
                     await transferMail(masterEmail, email, title, message);
                     res.status(200).send({
                         status: 'success',

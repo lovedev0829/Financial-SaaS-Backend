@@ -1,56 +1,29 @@
-const jwt = require("jsonwebtoken");
-const config = require('../config');
-const Admin = require('../models/Admin');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET_KEY } = require('../utils/secrets');
+const { logger } = require('../utils/logger');
 
-const tokenExpiresIn = 3600 * 24 * 7; // 7 days.
+const generateToken = (id) => jwt.sign({ id }, JWT_SECRET_KEY, { expiresIn: '1d'});
 
-const generateToken = (admin) => {
-  return jwt.sign({
-    username: admin.username,
-    exp: Math.floor(Date.now() / 1000) + tokenExpiresIn,
-  }, config.securityKey);
-}
+const decode = (token) => {
+    try {
+        return jwt.verify(token, JWT_SECRET_KEY)
+    } catch (error) {
+        logger.error(error);
+    }
+};
 
-const validateToken = (token) => {
-  try {
-    const decoded = jwt.verify(token, config.securityKey);
-    return Admin.findOne({ username: decoded.username });
-  } catch (err) {
-    console.log('[Token] error: ', err.message);
-    return false;
-  }
-}
-
-const adminMiddleware = (req, res, next) => {
-  const token = (req.headers.authorization || '').split(' ')[1] || '';
-
-  if (!token) {
-    return res.status(401).json({
-      status: false,
-      message: 'Authentication error!'
-    });
-  }
-
-  return Promise.resolve()
-    .then(() => {
-      return validateToken(token);
-    })
-    .then((admin) => {
-      if (!admin) throw new Error('Invalid token! Pls Login again!')
-      next();
-    })
-    .catch((err) => {
-      return res.status(401).json({
-        status: false,
-        message: err.message,
-      });
-    });
-}
-
-// const Authenticate = () => passport.authenticate("jwt", { session: false });
+// Token validation helper
+const isValidToken = (token) => {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      return !!decoded; // Convert truthy/falsy to boolean
+    } catch (error) {
+      return false;
+    }
+  };
 
 module.exports = {
-  generateToken,
-  validateToken,
-  adminMiddleware,
-};
+    generateToken,
+    isValidToken,
+    decode
+}
