@@ -92,7 +92,7 @@ exports.signin = (req, res) => {
             return;
         }
         if (data) {
-            if( data.status !== "approved" ){
+            if( data.status !== "approved" && data.status !== "enabled" ){
                 
                 let errorMsg = `The request is still in ${data.status} !`
 

@@ -1,7 +1,7 @@
 const User = require('../models/user.model');
 const { transferMail, removeFile } = require('../utils/common');
 const { generateToken } = require('../service/auth');
-const { CLIENT_HOST } = require('../utils/secrets')
+const { CLIENT_HOST, ADMIN_EMAIL } = require('../utils/secrets')
 
 exports.getCompanyEmployees = async (req, res) => {
     const { company_id } = req.params;
@@ -85,7 +85,7 @@ exports.createEmployee = async (req, res) => {
 
                     console.log(message)
                     
-                    await transferMail(masterEmail, email, title, message);
+                    await transferMail(ADMIN_EMAIL, email, title, message);
                     res.status(200).send({
                         status: 'success',
                         employee: data
