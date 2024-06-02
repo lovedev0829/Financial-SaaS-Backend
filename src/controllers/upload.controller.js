@@ -9,7 +9,6 @@ exports.upload = (req, res) => {
             // A Multer error occurred when uploading.
             return res.status(500).json({ message: "Multer error occurred.", error: error.message });
         } else if (error) {
-            console.log(error)
             // An unknown error occurred when uploading.
             return res.status(500).json({ message: error});
         }

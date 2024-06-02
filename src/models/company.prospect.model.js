@@ -32,7 +32,7 @@ class CompanyProspect {
                             t3.company_code
                     FROM users AS t1 
                     INNER JOIN companies_propects AS t2 ON (t1.id = t2.user_id) 
-                    LEFT JOIN companies AS t3 ON t1.company_id = t3.id
+                    LEFT JOIN companies AS t3 ON t2.cnpj = t3.cnpj
                     WHERE t1.role='master'`,
 
                 (err, res) => {

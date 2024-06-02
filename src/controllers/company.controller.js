@@ -77,13 +77,14 @@ exports.updateCompanyProspectStatus =  (req, res) =>{
 const transferConfirmRegistration  = async (host, email, user_id) => {
     const token = generateToken(user_id);
     const title = "Hi, Welcome to Financial SaaS platform"
-    const message = ` You can complete registeration by clicking the below link
-                      ${CLIENT_HOST}/auth/confirm/register?token=${token}
-                      Best regards
-                      from Financial SaaS team
+    const message = `
+    You can complete registeration by clicking the below link
+    ${CLIENT_HOST}/auth/confirm/register?token=${token}
+    Best regards
+    from Financial SaaS team
     `;
     console.log(message);
-    await transferMail(email, ADMIN_EMAIL, title, message);
+    await transferMail(ADMIN_EMAIL, email, title, message);
 }
 
 exports.getCompanies = (req, res) => {

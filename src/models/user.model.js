@@ -80,7 +80,13 @@ class User {
     }
 
     static getUserData(userId, cb){
-        db.query(`SELECT t1.*, t2.company_role FROM users AS t1 LEFT JOIN companies_propects AS t2 ON t1.id = t2.user_id WHERE t1.id = '${userId}'`,  (err, res) => {
+        db.query(`SELECT 
+                    t1.*, 
+                    IFNULL(t2.company_role, t3.company_role) AS company_role
+                    FROM users AS t1 
+                    LEFT JOIN companies_propects AS t2 ON t1.id = t2.user_id 
+                    LEFT JOIN companies AS t3 ON t1.company_id = t3.id
+                    WHERE t1.id = '${userId}'`,  (err, res) => {
             if (err) {
                 logger.error(err.message);
                 cb(err, null);

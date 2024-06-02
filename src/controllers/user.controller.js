@@ -78,11 +78,8 @@ exports.createEmployee = async (req, res) => {
                     
                     const token = generateToken(data?.userId);
                     const title = "Hi, You are invited SaaS platform!"
-                    const message = `
-                        You can complete registration by clicking the below link!
-                        
+                    const message = `You can complete registration by clicking the below link!
                         ${CLIENT_HOST}/auth/confirm/register?token=${token}
-                        
                         Best regards
                     `;
 

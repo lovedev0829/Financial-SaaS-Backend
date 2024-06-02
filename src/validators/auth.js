@@ -18,9 +18,9 @@ const signup = (req, res, next) => {
         cnpj: Joi.string()
             .required(),
         site: Joi.string()
-            .allow(),
+            .allow(""),
         message: Joi.string()
-            .allow(),
+            .allow(""),
         email: Joi.string()
             .email()
             .required(),
@@ -39,7 +39,6 @@ const signin = (req, res, next) => {
             .required(),
         password: Joi.string()
             .trim()
-            .pattern(new RegExp('^[a-zA-Z0-9]{6,30}$'), "special character (@!#$%^&*-=+)")
             .required()
     });
     validatorHandler(req, res, next, schema);

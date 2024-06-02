@@ -14,7 +14,7 @@ const create = (req, res, next) => {
         institution_type: Joi.string()
             .required(),
         company_address: Joi.string()
-            .required(),
+            .allow(""),
         business_email: Joi.string()
             .email()
             .required(),
@@ -40,7 +40,7 @@ const update = (req, res, next) => {
         institution_type: Joi.string()
             .required(),
         company_address: Joi.string()
-            .required(),
+            .allow(""),
         business_email: Joi.string()
             .email()
             .required(),
